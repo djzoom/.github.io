@@ -49,24 +49,30 @@
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    
+function drawFractal(x, y, len, angle) {
+  if (len < 1) return;
 
-    function drawFractal(x, y, len, angle) {
-      if (len < 1) return;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
 
-      ctx.beginPath();
-      ctx.moveTo(x, y);
+  const newX = x + len * Math.cos(angle);
+  const newY = y + len * Math.sin(angle);
+  ctx.lineTo(newX, newY);
 
-      const newX = x + len * Math.cos(angle);
-      const newY = y + len * Math.sin(angle);
-      ctx.lineTo(newX, newY);
+  ctx.lineWidth = len / 10;
+  ctx.strokeStyle = '#3498db'; // 使用一种颜色
+  ctx.lineCap = 'round'; // 添加平滑的线条效果
+  ctx.shadowColor = '#3498db'; // 添加阴影颜色
+  ctx.shadowBlur = 10; // 添加阴影模糊效果
+  ctx.stroke();
 
-      ctx.lineWidth = len / 10;
-      ctx.strokeStyle = `hsl(${angle * 180 / Math.PI}, 100%, 50%)`;
-      ctx.stroke();
-
-      drawFractal(newX, newY, len * 0.75, angle - Math.PI / 4);
-      drawFractal(newX, newY, len * 0.75, angle + Math.PI / 4);
-    }
+  const newAngle1 = angle - Math.PI / 4 + Math.sin(Date.now() * 0.001) * 0.2; // 添加动态角度变化
+  const newAngle2 = angle + Math.PI / 4 + Math.sin(Date.now() * 0.001) * 0.2;
+  drawFractal(newX, newY, len * 0.75, newAngle1);
+  drawFractal(newX, newY, len * 0.75, newAngle2);
+}
 
     function animate() {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
