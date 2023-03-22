@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>炫酷交互效果示例</title>
+  <title>炫酷交互效果与分形背景示例</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,7 +11,9 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      position: relative;
       transition: background-color 1s;
+      overflow: hidden;
     }
 
     button {
@@ -23,17 +25,60 @@
       background-color: #3498db;
       color: white;
       outline: none;
+      position: absolute;
+      z-index: 1;
     }
 
     button:hover {
       background-color: #2980b9;
     }
+
+    canvas {
+      display: block;
+      position: absolute;
+      z-index: 0;
+    }
   </style>
 </head>
 <body>
-  <button onclick="changeBackgroundColor()">点击改变背景颜色</button>
-
+  <button onclick="changeBackgroundColor()">加菲众疯狂点击实验</button>
+  <canvas id="fractalCanvas"></canvas>
+  
   <script>
+    const canvas = document.getElementById('fractalCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function drawFractal(x, y, len, angle) {
+      if (len < 1) return;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      const newX = x + len * Math.cos(angle);
+      const newY = y + len * Math.sin(angle);
+      ctx.lineTo(newX, newY);
+
+      ctx.lineWidth = len / 10;
+      ctx.strokeStyle = `hsl(${angle * 180 / Math.PI}, 100%, 50%)`;
+      ctx.stroke();
+
+      drawFractal(newX, newY, len * 0.75, angle - Math.PI / 4);
+      drawFractal(newX, newY, len * 0.75, angle + Math.PI / 4);
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawFractal(canvas.width / 2, canvas.height / 2, 150, Math.PI / 180 * Date.now() * 0.03);
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
     function changeBackgroundColor() {
       const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
       document.body.style.backgroundColor = randomColor;
