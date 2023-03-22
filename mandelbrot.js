@@ -1,53 +1,46 @@
-const canvas = document.getElementById('mandelbrotCanvas');
+const canvas = document.getElementById('mandelbrot');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
+const width = canvas.width;
+const height = canvas.height;
 const maxIterations = 1000;
-const zoomFactor = 1.01;
-
-let offsetX = canvas.width / 2;
-let offsetY = canvas.height / 2;
-let zoom = 200;
 
 function mandelbrot(x, y) {
-    let real = x;
-    let imaginary = y;
-    let n = 0;
-
-    for (let i = 0; i < maxIterations; i++) {
-        let r2 = real * real;
-        let i2 = imaginary * imaginary;
-        if (r2 + i2 > 4) break;
-
-        imaginary = 2 * real * imaginary + y;
-        real = r2 - i2 + x;
-
-        n++;
-    }
-
-    return n;
+  let real = x;
+  let imag = y;
+  for (let n = 0; n < maxIterations; n++) {
+    const real2 = real * real - imag * imag + x;
+    const imag2 = 2 * real * imag + y;
+    real = real2;
+    imag = imag2;
+    if (real * real + imag * imag > 4) return n / maxIterations;
+  }
+  return 0;
 }
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'black';
-
-    for (let x = 0; x < canvas.width; x++) {
-        for (let y = 0; y < canvas.height; y++) {
-            let a = (x - offsetX) / zoom;
-            let b = (y - offsetY) / zoom;
-
-            let m = mandelbrot(a, b);
-            let color = m === maxIterations ? 'black' : 'white';
-
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, 1, 1);
-        }
+function draw(scale, angle) {
+  const offsetX = width / 2;
+  const offsetY = height / 2;
+  ctx.clearRect(0, 0, width, height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const newX = (x - offsetX) / scale;
+      const newY = (y - offsetY) / scale;
+      const rotatedX = newX * Math.cos(angle) - newY * Math.sin(angle);
+      const rotatedY = newX * Math.sin(angle) + newY * Math.cos(angle);
+      const color = mandelbrot(rotatedX, rotatedY);
+      ctx.fillStyle = color === 0 ? 'black' : `hsl(${360 * color}, 100%, 50%)`;
+      ctx.fillRect(x, y, 1, 1);
     }
-
-    zoom *= zoomFactor;
-    requestAnimationFrame(draw);
+  }
 }
 
-draw();
+let scale = 200;
+let angle = 0;
+function animate() {
+  draw(scale, angle);
+  scale *= 1.01;
+  angle += 0.01;
+  requestAnimationFrame(animate);
+}
+
+animate();
