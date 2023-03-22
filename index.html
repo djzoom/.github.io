@@ -1,87 +1,20 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Mandelbrot Fractal Animation</title>
-    <style>
-      canvas {
-        display: block;
-        margin: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="canvas"></canvas>
-    <script>
-      const canvas = document.getElementById("canvas");
-      const context = canvas.getContext("2d");
-
-      const WIDTH = canvas.width = window.innerWidth;
-      const HEIGHT = canvas.height = window.innerHeight;
-
-      const MAX_ITERATIONS = 100;
-
-      let offsetX = 0;
-      let offsetY = 0;
-      let zoom = 1;
-
-      function mandelbrot(c) {
-        let z = 0;
-        let n = 0;
-
-        while (Math.abs(z) <= 2 && n < MAX_ITERATIONS) {
-          z = z * z + c;
-          n++;
-        }
-
-        if (n == MAX_ITERATIONS) {
-          return 0;
-        } else {
-          return n / MAX_ITERATIONS;
-        }
-      }
-
-      function draw() {
-        for (let x = 0; x < WIDTH; x++) {
-          for (let y = 0; y < HEIGHT; y++) {
-            let real = (x - WIDTH / 2) / (0.5 * zoom * WIDTH) + offsetX;
-            let imag = (y - HEIGHT / 2) / (0.5 * zoom * HEIGHT) + offsetY;
-
-            let c = new Complex(real, imag);
-            let m = mandelbrot(c);
-
-            let color = `hsl(${m * 360}, 100%, 50%)`;
-            context.fillStyle = color;
-            context.fillRect(x, y, 1, 1);
-          }
-        }
-
-        zoom *= 1.01;
-        offsetX += 0.001;
-        offsetY += 0.001;
-
-        requestAnimationFrame(draw);
-      }
-
-      class Complex {
-        constructor(real, imag) {
-          this.real = real;
-          this.imag = imag;
-        }
-
-        square() {
-          let real = this.real * this.real - this.imag * this.imag;
-          let imag = 2 * this.real * this.imag;
-          return new Complex(real, imag);
-        }
-
-        add(other) {
-          let real = this.real + other.real;
-          let imag = this.imag + other.imag;
-          return new Complex(real, imag);
-        }
-      }
-
-      draw();
-    </script>
-  </body>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>旋转放大的曼德布罗特分形集</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mandelbrotCanvas"></canvas>
+  <script src="mandelbrot.js"></script>
+</body>
 </html>
